@@ -1,0 +1,22 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Gryphon Rentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/contact.css' %}">
+</head>
+<body>
+    <div class="contact-container">
+        <h1>Contact Us</h1>
+        <div class="contact-info">
+            <p><strong>Address:</strong> 123 Gryphon Street, Kolkata, India</p>
+            <p><strong>Email:</strong> support@gryphonrentals.com</p>
+            <p><strong>Phone:</strong> +91 98765 43210</p>
+        </div>
+        <a href="{% url 'index' %}" class="back-btn">Back to Home</a>
+    </div>
+</body>
+</html>

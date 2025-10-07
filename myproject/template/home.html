@@ -1,0 +1,291 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Gryphon Rentals</title>
+    <!-- Flatpickr CSS for the date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet"href="{% static 'css/homestyle.css' %}">
+    <style>
+        /* Styles for the 'Add Phone Number' form in the profile section */
+        .add-phone-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .add-phone-section p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .add-phone-form .phone-input-group {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .add-phone-form select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+            background-color: #f8f8f8;
+            outline: none;
+        }
+        .add-phone-form input[type="tel"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-left: none;
+            border-radius: 0 5px 5px 0;
+        }
+        .btn-add-phone {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .btn-add-phone:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">Gryphon<span> Rentals</span></div>
+                <ul class="nav-menu">
+                    <li class="nav-item active" data-section="vehicles">Vehicles</li>
+                    <li class="nav-item" data-section="reservations">My Reservations</li>
+                    <li class="nav-item" data-section="profile">Profile</li>
+                    <li class="nav-item"><a href="{% url 'logout' %}" style="color: white; text-decoration: none;">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Vehicles Section -->
+            <section id="vehicles" class="section active">
+                <h2 class="section-title">Available Vehicles</h2>
+ <div class="vehicle-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="car">Cars</button>
+                    <button class="filter-btn" data-filter="bike">Bikes</button>
+                    <button class="filter-btn" data-filter="electric">Electric</button>
+                </div>
+                
+                <div class="vehicle-grid" id="vehicleGrid">
+                    <!-- Vehicle cards will be loaded here -->
+                </div>
+                <div class="pagination-controls" id="paginationControls">
+                    <!-- Pagination buttons will be dynamically inserted here by JavaScript -->
+                </div>
+            </section>
+            
+            <!-- Reservations Section -->
+            <section id="reservations" class="section">
+                <h2 class="section-title">My Reservations</h2>
+
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="reservations-container" id="reservationsList">
+                    {% for reservation in reservations %}
+                        <div class="reservation-card status-{{ reservation.status }}">
+                            <div class="card-header">
+                                <span class="status-badge">{{ reservation.get_status_display }}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="vehicle-details">
+                                    <img src="{{ reservation.vehicle.image_url|default:'/static/images/default.png' }}" alt="{{ reservation.vehicle.name }}" class="vehicle-img">
+                                    <div class="vehicle-info">
+                                        <h4>{{ reservation.vehicle.name }}</h4>
+                                        <p>{{ reservation.vehicle.type|capfirst }}</p>
+                                    </div>
+                                </div>
+                                <div class="reservation-info">
+                                    <p><strong>Dates:</strong> {{ reservation.start_date|date:"M d" }} - {{ reservation.end_date|date:"M d, Y" }}</p>
+                                    <p><strong>Pickup:</strong> {{ reservation.pickup_location }}</p>
+                                    <p><strong>Total Cost:</strong> ${{ reservation.total_cost|floatformat:2 }}</p>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                {% if reservation.status == 'pending_payment' %}
+                                    <a href="{% url 'payment_page' reservation.id %}" class="btn-pay">Pay Now</a>
+                                {% elif reservation.status == 'payment_failed' %}
+                                    <a href="{% url 'payment_page' reservation.id %}" class="btn-pay">Retry Payment</a>
+                                {% elif reservation.status == 'active' %}
+                                    <form method="POST" action="{% url 'home' %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                        <button type="submit" name="action" value="cancel" class="btn-cancel">Cancel</button>
+                                    </form>
+                                    <form method="POST" action="{% url 'home' %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                        <button type="submit" name="action" value="complete" class="btn-complete">Mark as Complete</button>
+                                    </form>
+                                {% elif reservation.status == 'completed' %}
+                                    <p class="action-text">Thank you for choosing us!</p>
+                                {% elif reservation.status == 'cancelled' %}
+                                    <p class="action-text">This reservation was cancelled.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="no-reservation">You don't have any reservations yet. Explore vehicles and rent your first ride!</p>
+                    {% endfor %}
+                </div>
+            </section>
+            
+            <!-- Profile Section -->
+            <section id="profile" class="section">
+                <h2 class="section-title">My Profile</h2>
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.first_name.0|default:'' }}{{ user.last_name.0|default:'' }}</div>
+                    <div class="user-details">
+                        <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="user-email">{{ user.email }}</div>
+                        {% if user_profile and user_profile.phone %}
+                            <div class="user-phone">{{ user_profile.phone }}</div>
+                        {% else %}
+                            <div class="add-phone-section">
+                                <p>Add a phone number to enable login by phone.</p>
+                                <form method="POST" action="{% url 'add_phone_number' %}" class="add-phone-form">
+                                    {% csrf_token %}
+                                    <div class="phone-input-group">
+                                        <select name="countryCode">
+                                            <option value="+1">+1</option>
+                                            <option value="+44">+44</option>
+                                            <option value="+91">+91</option>
+                                            <option value="+61">+61</option>
+                                            <option value="+49">+49</option>
+                                        </select>
+                                        <input type="tel" name="phone" placeholder="Your phone number" required>
+                                    </div>
+                                    <button type="submit" class="btn-add-phone">Save Phone Number</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <h3 class="subsection-title">Rental Statistics</h3>
+                <div class="statistics">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ total_rentals }}</div>
+                        <div class="stat-label">Total Rentals</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ active_rentals }}</div>
+                        <div class="stat-label">Active Rentals</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ pending_rentals }}</div>
+                        <div class="stat-label">Pending Action</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${{ total_spent|floatformat:2 }}</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ favorite_type }}</div>
+                        <div class="stat-label">Favorite Type</div>
+                    </div>
+                </div>
+                {% if not reservations %}
+                    <div class="no-reservations-profile-message">
+                        <p>It looks like you haven't made any reservations yet. Start exploring our vehicles to see your rental statistics here!</p>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </main>
+
+    <!-- Rental Modal -->
+    <div class="modal" id="rentalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Rent a Vehicle</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="rentalForm">
+                    <div class="form-group">
+                        <label for="pickupDate">Pickup Date</label>
+                        <input type="date" id="pickupDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="returnDate">Return Date</label>
+                        <input type="date" id="returnDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupLocation">Pickup Location</label>
+                        <select id="pickupLocation" class="form-control" required>
+                            <option value="">Select location</option>
+                            <option value="downtown">Downtown</option>
+                            <option value="airport">Airport</option>
+                            <option value="north">North Branch</option>
+                            <option value="south">South Branch</option>
+                        </select>
+                    </div>
+                    
+                    <div class="rental-summary">
+                        <h4>Rental Summary</h4>
+                        <div class="summary-row">
+                            <span>Vehicle:</span>
+                            <span id="summaryVehicle">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Duration:</span>
+                            <span id="summaryDuration">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Rate:</span>
+                            <span id="summaryRate">-</span>
+                        </div>
+                        <div class="summary-row summary-total">
+                            <span>Total:</span>
+                            <span id="summaryTotal">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-danger" id="cancelRental">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Confirm Rental</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">Gryphon<span> Rentals</span></div>
+                <ul class="footer-links">
+                    <li class="footer-item"><a href="{% url 'about' %}">About Us</a></li>
+                    <li class="footer-item"><a href="{% url 'terms' %}">Terms of Service</a></li>
+                    <li class="footer-item"><a href="{% url 'policy' %}">Privacy Policy</a></li>
+                    <li class="footer-item"><a href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+                <div class="copyright">© 2025 Gryphon Rentals. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
+<!-- Flatpickr JS for the date picker -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="{% static 'js/kahani.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gryphon Rentals{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://kit.fontawesome.com/7f91b2fc25.js" crossorigin="anonymous" async></script>
+    
+    <!-- This block allows child templates to add extra CSS or meta tags -->
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <a href="{% url 'index' %}" style="text-decoration: none; color: inherit;">
+                        Gryphon <span> Rentals</span>
+                    </a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{% url 'index' %}" style="text-decoration:none; color:white">Home</a></li>
+                    <li><a href="{% url 'vehicles' %}" style="text-decoration:none; color:white">Vehicles</a></li>
+                    <li><a href="{% url 'about' %}" style="text-decoration:none; color:white">About</a></li>
+                    <li><a href="{% url 'contact' %}" style="text-decoration:none; color:white">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- The content of each individual page will go here -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">Gryphon<span> Rentals</span></div>
+                <ul class="footer-links">
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                    <li><a href="{% url 'terms' %}">Terms of Service</a></li>
+                    <li><a href="{% url 'policy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+                <div class="copyright">© 2025 Gryphon Rentals. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- This block allows child templates to add extra JavaScript files -->
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

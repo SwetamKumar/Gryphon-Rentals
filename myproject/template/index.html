@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <title> Gryphon Rentals - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-car-side"></i>
+                    Gryphon <span> Rentals</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item active">Home</li>
+                    <a href="{% url 'vehicles' %}?filter=car" style="text-decoration:none; color:white" ><li class="nav-item">Cars</li></a>
+                    <a href="{% url 'vehicles' %}?filter=bike" style="text-decoration:none; color:white"><li class="nav-item">Bikes</li></a>
+                    <a href="{% url 'about' %}" style="text-decoration:none; color:white"> <li class="nav-item">About</li> </a>
+                    <a href="{% url 'contact' %}" style="text-decoration:none; color:white"><li class="nav-item">Contact</li></a>
+                </ul>
+                <div class="auth-buttons">
+                    <button class="auth-btn login-btn" id="showLogin">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="auth-btn register-btn" id="showRegister">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Experience Freedom on Wheels</h1>
+                <p class="hero-subtitle">Rent the perfect vehicle for your journey with just a few clicks.</p>
+                <div>
+                    <a href="{% url 'vehicles' %}">
+                    <button class="hero-btn" id="exploreVehicles">Explore Vehicles</button>
+ </a>
+                    <a href="{% url 'about' %}?redirect_to=index">
+                    <button class="hero-btn outline" id="learnMore">Learn More</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="category-section">
+        <div class="container">
+            <h2 class="section-title">Choose Your Ride</h2>
+            <div class="category-container">
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Car Category">
+                    <div class="category-overlay">
+                        <h3 class="category-title">Premium Cars</h3>
+                        <p class="category-description">From economy to luxury, find the perfect car for your needs.</p>
+                        <a href="{% url 'vehicles' %}?filter=car">
+                        <button class="category-btn">Browse Cars</button>
+                        </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3" alt="Bike Category">
+                    <div class="category-overlay">
+                        <h3 class="category-title">Quality Bikes</h3>
+                        <p class="category-description">City cruisers, mountain bikes and electric options available.</p>
+                        <a href="{% url 'vehicles' %}?filter=bike">
+                        <button class="category-btn">Browse Bikes</button>
+                        </a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="close-modal" id="closeLoginModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back!</h2>
+                <p class="modal-subtitle">Sign in to access your Gryphon account</p>
+            </div>
+            
+            <div class="form-tabs">
+                <div class="form-tab active" data-tab="email-tab">Email</div>
+                <div class="form-tab" data-tab="phone-tab">Phone</div>
+            </div>
+            
+            <div class="tab-content active" id="email-tab">
+                <form id="loginForm" method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" name="loginEmail" class="form-control" placeholder="Your email address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="loginPassword" class="form-control" placeholder="Your password" required>
+                    </div>
+                    <div class="form-options">
+                        <div class="form-check">
+                            <input type="checkbox" id="rememberMe">
+                            <label for="rememberMe">Remember me</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Sign In</button>
+                </form>
+            </div>
+            
+            <div class="tab-content" id="phone-tab">
+                <form id="phoneLoginForm" method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="login_method" value="phone">
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <div class="phone-input">
+                            <select id="countryCode" name="countryCode">
+                                <option value="+1">+1</option>
+                                <option value="+44">+44</option>
+                                <option value="+91">+91</option>
+                                <option value="+61">+61</option>
+                                <option value="+49">+49</option>
+                            </select>
+                            <input type="tel" id="phoneNumber" name="loginPhone" class="form-control" placeholder="Phone number" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneLoginPassword">Password</label>
+                        <input type="password" id="phoneLoginPassword" name="loginPassword" class="form-control" placeholder="Your password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Sign In</button>
+                </form>
+            </div>
+            
+            <div class="switch-form">
+                Don't have an account? <a href="#" id="switchToRegister">Sign up now</a>
+            </div>
+        </div>
+    </div>
+    <!-- Register Modal completed -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal">
+            <button class="close-modal" id="closeRegisterModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2 class="modal-title">Create Account</h2>
+                <p class="modal-subtitle">Join Gryphon Rentals and start your journey</p>
+            </div>
+            <form id="registerForm" method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" class="form-control" placeholder="First name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Your email address" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Phone Number (for login)</label>
+                    <div class="phone-input">
+                        <select id="registerCountryCode" name="registerCountryCode">
+                            <option value="+1">+1</option>
+                            <option value="+44">+44</option>
+                            <option value="+91">+91</option>
+                            <option value="+61">+61</option>
+                            <option value="+49">+49</option>
+                        </select>
+                        <input type="tel" id="registerPhone" name="phone" class="form-control" placeholder="Phone number (optional)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" name="registerPassword" class="form-control" placeholder="Create password" required>
+                </div>
+                <button type="submit" class="submit-btn">Sign Up</button>
+            </form>
+            <div class="switch-form">
+                Already have an account? <a href="#" id="switchToLogin">Sign in</a>
+            </div>
+        </div>
+    </div>
+<script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

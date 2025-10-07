@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Vehicles | Gryphon Rentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/vehicles.css' %}">
+</head>
+<body>
+    <h1>The Vehicles of your dreams</h1>
+    <div class="filter-buttons">
+        <a href="{% url 'vehicles' %}?filter=all"><button class="{% if active_filter == 'all' %}active{% endif %}">All</button></a>
+        <a href="{% url 'vehicles' %}?filter=car"><button class="{% if active_filter == 'car' %}active{% endif %}">Cars</button></a>
+        <a href="{% url 'vehicles' %}?filter=bike"><button class="{% if active_filter == 'bike' %}active{% endif %}">Bikes</button></a>
+        <a href="{% url 'vehicles' %}?filter=electric"><button class="{% if active_filter == 'electric' %}active{% endif %}">Electric</button></a>
+    </div>
+
+    <div class="vehicle-list">
+        {% for vehicle in vehicles %}
+            <div class="vehicle-card">
+                <img src="{{ vehicle.image_url }}" alt="{{ vehicle.name }}">
+                <h3>{{ vehicle.name }}</h3>
+                <p>${{ vehicle.price_per_day|floatformat:2 }} / day</p>
+                <span class="vehicle-type">{{ vehicle.type|title }}</span>
+            </div>
+        {% empty %}
+            <p style="text-align: center; grid-column: 1 / -1; font-size: 1.2em;">No vehicles found for this category.</p>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'index' %}" class="back-btn">Back to Home</a>
+</body>
+</html>

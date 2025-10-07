@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Payment | Gryphon Rentals</title>
+    <link rel="stylesheet" href="{% static 'css/homestyle.css' %}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+        }
+        .payment-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .payment-header h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .payment-header p {
+            margin-bottom: 30px;
+            color: #777;
+        }
+        .payment-details {
+            text-align: left;
+            margin-bottom: 30px;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding: 20px 0;
+        }
+        .payment-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .payment-details .total {
+            font-weight: bold;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+        .payment-form .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .payment-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        .payment-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .payment-form .btn-pay {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #27ae60;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .payment-form .btn-pay:hover {
+            background-color: #229954;
+        }
+        .secure-info {
+            margin-top: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h2>Secure Payment</h2>
+            <p>Complete your booking for <strong>{{ reservation.vehicle.name }}</strong></p>
+        </div>
+
+        <div class="payment-details">
+            <div class="detail-row">
+                <span>Rental Period:</span>
+                <span>{{ reservation.start_date|date:"M d" }} - {{ reservation.end_date|date:"M d, Y" }}</span>
+            </div>
+            <div class="detail-row total">
+                <span>Total Amount:</span>
+                <span>${{ reservation.total_cost|floatformat:2 }}</span>
+            </div>
+        </div>
+
+        <form class="payment-form" action="{% url 'process_payment' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+            
+            <div class="form-group">
+                <label for="card_number">Card Number</label>
+                <input type="text" id="card_number" name="card_number" placeholder="**** **** **** 1234" required>
+            </div>
+            <div class="form-group">
+                <label for="expiry_date">Expiry Date</label>
+                <input type="text" id="expiry_date" name="expiry_date" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" name="cvv" placeholder="123" required>
+            </div>
+
+            <button type="submit" class="btn-pay">Pay ${{ reservation.total_cost|floatformat:2 }}</button>
+        </form>
+        <p class="secure-info">This is a dummy payment gateway for demonstration purposes. No real transaction will be made.</p>
+    </div>
+</body>
+</html>

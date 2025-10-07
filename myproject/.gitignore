@@ -1,0 +1,14 @@
+# Secret files - DO NOT commit to version control
+firebase-service-account.json
+firebase-adminsdk.json
+requirements.txt
+# Django stuff
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+
+# Environment
+.env
+
